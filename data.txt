@@ -4,7 +4,8 @@
 # Magnetic declination is -11 degrees.  
 # (Magnetic north is 11 degrees west of true north)
 #
-# Numbers are (1) headings in degrees, and (2) distances in paces
+# Numbers are (1) headings in degrees with respet to magnetic north, and 
+# (2) distances in paces
 @start
 200 26
 228 36
