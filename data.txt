@@ -4,9 +4,14 @@
 # Magnetic declination is -11 degrees.  
 # (Magnetic north is 11 degrees west of true north)
 #
+# Latitude, Longitude of start point are for Penn Station, New York City.  This
+# is not what you want, but it's a reasonable default in terms of latitude.
+#
 # Numbers are (1) headings in degrees with respet to magnetic north, and 
 # (2) distances in paces
-@start
+MAGNETIC_DECLINATION -11.0
+PACES_PER_100METERS 60
+@start latlon=40.750568,-73.993519
 200 26
 228 36
 212 26

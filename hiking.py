@@ -62,13 +62,13 @@ def correct_the_path(numpy_east, east1, east2):
     return numpy_east
 
 
-def rotate_declination(east, north, declination=-11):
+def rotate_declination(east, north, declination=-11, scale=1):
     c = np.cos(declination*np.pi/180) 
     s = np.sin(declination*np.pi/180) 
     mat = np.array([[c,  s], 
                     [-s, c]])
     both = np.dot(mat, np.vstack((np.array(east), np.array(north))))
-    return both[0,:], both[1,:]
+    return both[0,:]*scale, both[1,:]*scale
 
 
 def foo():
@@ -76,8 +76,13 @@ def foo():
         lines = f.readlines()
         f.close()
 
-    declination = -11
-    #declination = 0
+    # Default to 0 degrees declination.
+    #declination = -11
+    declination = 0
+
+    # Default to a pace count of 60 paces per 100 meters
+    paces_per_100meters = 60.0
+
     label = 'start'
     locations = [(0,0)]
     checkpoints = []
@@ -87,12 +92,22 @@ def foo():
     offsets = {}
 
     for line in lines:
+        if re.search('^PACES_PER_100METERS', line):
+            paces_per_100meters = float(line.split()[1])
+            continue
+
+        if re.search('^MAGNETIC_DECLINATION', line):
+            declination = float(line.split()[1])
+            continue
+
         if re.search('^#', line):
             continue
 
         if re.search('^@', line):
             old_label = copy.copy(label)
-            label = line[1:].strip()
+            # label is everything after the @ sign and before the first
+            # whitespace
+            label = line[1:].split()[0].strip()
             #print label
             checkpoints.append(locations[-1])
 
@@ -148,16 +163,19 @@ def foo():
     #north = [x[1] for x in checkpoints]
     #mpl.plot(east, north, 'ob')
 
+    # Convert paces to meters by multiplying by scale.
+    scale = 100.0 / paces_per_100meters
+
     for pair in pairs:
         east = (new_locs[pair[0]][0], new_locs[pair[1]][0])
         north = (new_locs[pair[0]][1], new_locs[pair[1]][1])
         #mpl.plot(east, north, '-y')
 
-        east, north = rotate_declination(east, north, declination=declination)
+        east, north = rotate_declination(east, north, declination=declination, scale=scale)
 
         off_east = offsets[pair][2]
         off_north = offsets[pair][3]
-        off_east, off_north = rotate_declination(off_east, off_north, declination=declination)
+        off_east, off_north = rotate_declination(off_east, off_north, declination=declination, scale=scale)
 
         eastings = correct_the_path(off_east, east[0], east[1])
         northings = correct_the_path(off_north, north[0], north[1])
@@ -165,12 +183,15 @@ def foo():
 
     east = [new_locs[x][0] for x in new_locs]
     north = [new_locs[x][1] for x in new_locs]
-    east, north = rotate_declination(east, north, declination=declination)
+    east, north = rotate_declination(east, north, declination=declination, scale=scale)
     mpl.plot(east, north, 'ob')
-    mpl.xlabel('paces east')
-    mpl.ylabel('paces north')
+    mpl.xlabel('meters east')
+    mpl.ylabel('meters north')
 
     mpl.axis('equal')
+
+    mpl.ylim([-800, 250])  # autoscaling wasn't working right
+
     mpl.tight_layout()
     #mpl.savefig('test_no_declination.png', transparent=True)
     mpl.savefig('test_declination.png', transparent=True)

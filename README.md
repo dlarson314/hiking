@@ -27,9 +27,9 @@ The resulting map can look something like this:
 
 ## To Do
 - [ ] Include better error bars (fractional error on pace counts)
-- [ ] Let magnetic declination be read in as a keyword
-- [ ] Let pace count (paces per 100 meters) be read in as a keyword
-- [ ] Let decimal latitude and longitude to be added to a waypoint, if known
+- [x] Let magnetic declination be read in as a keyword
+- [x] Let pace count (paces per 100 meters) be read in as a keyword
+- [x] Let decimal latitude and longitude to be added to a waypoint, if known
 - [ ] Use a spherical Earth model to give lat/lon values to all points
 - [ ] If multiple waypoints have lat/lon values, use those in the fitting process. 
 - [ ] Output result in gpx format, for input into www.openorienteering.org
