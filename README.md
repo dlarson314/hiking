@@ -1,6 +1,8 @@
 # hiking
 Create maps of hiking paths, using pace counts and compass headings
 
+## Usage
+
 The notes taken while hiking should be of this form:
 ```text
 # This is a comment
@@ -22,4 +24,12 @@ have the `@start` waypoint show up at least twice in the list of waypoints.
 
 The resulting map can look something like this:
 ![Resulting map](test_declination.png)
+
+## To Do
+- [ ] Include better error bars (fractional error on pace counts)
+- [ ] Allow decimal latitude and longitude to be added to a waypoint, if known
+- [ ] Use a spherical Earth model to give lat/lon values to all points
+- [ ] If multiple waypoints have lat/lon values, use those in the fitting process. 
+- [ ] Output result in gpx format, for input into www.openorienteering.org
+  software, or other mapping software.
 
