@@ -20,3 +20,6 @@ To allow the code to correct for errors, hiking paths should contain loops,
 where you revisit the same point at least twice.  Therefore, it is preferred to
 have the `@start` waypoint show up at least twice in the list of waypoints.
 
+The resulting map can look something like this:
+![Resulting map](test_declination.png)
+

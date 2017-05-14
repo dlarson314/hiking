@@ -76,8 +76,8 @@ def foo():
         lines = f.readlines()
         f.close()
 
-    #declination = -11
-    declination = 0
+    declination = -11
+    #declination = 0
     label = 'start'
     locations = [(0,0)]
     checkpoints = []
@@ -167,10 +167,13 @@ def foo():
     north = [new_locs[x][1] for x in new_locs]
     east, north = rotate_declination(east, north, declination=declination)
     mpl.plot(east, north, 'ob')
+    mpl.xlabel('paces east')
+    mpl.ylabel('paces north')
 
     mpl.axis('equal')
     mpl.tight_layout()
-    mpl.savefig('test_no_declination.png', transparent=True)
+    #mpl.savefig('test_no_declination.png', transparent=True)
+    mpl.savefig('test_declination.png', transparent=True)
     mpl.show()
 
 
