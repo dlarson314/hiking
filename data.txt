@@ -1,0 +1,230 @@
+# 2017-04-15
+# Patapsco Valley State Park
+# Headings are given with respect to magnetic north.
+# Magnetic declination is -11 degrees.  
+# (Magnetic north is 11 degrees west of true north)
+#
+# Numbers are (1) headings in degrees, and (2) distances in paces
+@start
+200 26
+228 36
+212 26
+222 30
+232 49
+@caution_sign
+317 33
+@pole
+116 17
+133 11
+@caution_sign
+219 24
+154 16
+166 10
+147 26
+177 24
+159 9
+155 28
+198 54
+@Bloede_Dam
+82 30
+89 191
+129 93
+131 53
+25 17
+134 100
+151 53
+140 30
+@railroad_bridge
+000 29
+@sawmill_trail_sign_1
+014 10
+346 21
+014 30
+028 30
+011 11
+356 12
+282 12
+328 25
+319 24
+@post_28
+290 20
+315 27
+326 25
+343 20
+350 24
+041 23
+033 11
+038 20
+@post_27
+010 28
+021 10
+@power_lines_1
+297 40
+312 41
+@white_gravel_trail
+337 30
+345 21
+003 52
+005 17
+@control_point_05
+331 48
+009 56
+@sawmill_trail_sign_2
+319 32
+@road
+258 51
+231 66
+223 40
+237 25
+199 16
+@start
+# walking back to sign
+@sawmill_trail_sign_2
+119 7
+085 20
+130 10
+110 13
+087 17
+106 33
+140 16
+100 33
+120 7
+204 29
+148 27
+155 18
+175 12
+178 36
+136 12
+224 14
+248 11
+302 5
+214 16
+109 20
+090 4
+@post_26
+097 24
+@santee_branch_trail_sign_1
+083 12
+139 15
+217 24
+233 16
+222 16
+187 16
+130 35
+179 22
+230 6
+@power_lines_2
+223 20
+220 14
+200 13
+151 14
+096 47
+@santee_branch_trail_and_charcoal_trail
+133 20
+@post_25
+133 15
+155 30
+109 7
+123 17
+067 31
+@power_lines_3
+049 7
+@post_24
+065 10
+051 36
+@santee_branch_trail_and_charcoal_trail_2
+099 18
+071 10
+039 24
+023 8
+# on paved road
+321 57
+@charcoal_trail
+291 29
+261 47
+@bathrooms
+285 29
+235 20
+287 8
+@campsite_274
+# it was empty
+# going off trail now
+290 30
+# on charcoal trail
+331 21
+015 19
+# trail going the wrong way
+# going off trail again 
+340 30
+# on white blazed trail (Santee Branch)
+039 16
+295 20
+@santee_branch_trail_sign_1
+267 23
+@post_26
+201 14
+223 40
+184 17
+201 8
+@power_lines_1
+204 22
+176 17
+@post_27
+222 21
+215 34
+187 19
+154 20
+170 21
+138 10
+127 19
+115 26
+@post_28
+150 19
+132 37
+169 13
+189 15
+203 13
+198 33
+178 40
+@sawmill_trail_sign_1
+158 20
+@bridge_1
+# going under bridge
+243 16
+@bridge_2
+266 11
+# now on paved trail
+317 45
+312 81
+332 20
+312 76
+307 92
+273 90
+270 72
+266 32
+@Bloede_Dam
+# steep uphill now...
+021 23
+067 3
+008 37
+327 24
+340 26
+001 20
+332 30
+332 17
+346 21
+340 22
+058 20
+@caution_sign
+053 25
+059 26
+045 25
+042 90
+041 20
+063 15
+026 34
+@start
+
+
+
+
