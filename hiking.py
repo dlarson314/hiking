@@ -335,6 +335,9 @@ def foo():
       y = [known_locations[label][1] for label in labels]
       mpl.plot(x, y, '+k') #, color='C%d'%solve_level)
       solve_level += 1
+      for label in labels:
+        easting, northing = known_locations[label]
+        print('%s\t%s\t%s' % (easting, northing, label))
       continue
 
     if re.search('^@', line):
