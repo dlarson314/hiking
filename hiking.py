@@ -250,9 +250,9 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
       constraint_vec_east[row] -= known_east * weight
       constraint_vec_north[row] -= known_north * weight
 
-  loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_east)
+  loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_east, rcond=None)
   print ('easting errors = ', s)
-  loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_north)
+  loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_north, rcond=None)
   print ('northing errors = ', s)
 
   locations = {label: (east, north) for label, east, north in zip(labels, loc_east, loc_north)}
@@ -269,8 +269,8 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
   return corrected_paths, locations
 
 
-def foo():
-  with open('data.txt') as f:
+def main(args):
+  with open(args.filename) as f:
     lines = f.readlines()
     f.close()
 
@@ -289,8 +289,7 @@ def foo():
   path_list = []
   current_path = ShortPath()
 
-  #mpl.figure(1, figsize=(8.5,11))
-  mpl.figure(1)
+  mpl.figure(1, figsize=args.figsize)
 
   for line in lines:
     if re.search('^UNITS', line):
@@ -372,14 +371,36 @@ def foo():
   mpl.ylabel(units + ' north')
   mpl.axis('equal')
   mpl.tight_layout()
-  mpl.savefig('foo.png', transparent=False, dpi=100)
+  mpl.savefig(args.output, transparent=False, dpi=args.dpi)
   mpl.show()
 
 
 if __name__ == "__main__":
   #unittest.main()
 
-  foo()
+  parser = argparse.ArgumentParser(description="Plot bearings and pace counts")
+  parser.add_argument('filename', help='Input filename')
+  parser.add_argument('-o', '--output', help='Output filaname for figure')
+  parser.add_argument('-s', '--figsize', help='width,height of figure in inches', default="11,8.5")
+  parser.add_argument('--dpi', type=int, help='Dots per inch', default=100)
+
+  args = parser.parse_args()
+
+  try:
+    height, width = args.figsize.split(',')
+    height = float(height)
+    width = float(width)
+    args.figsize = (height, width)
+  except:
+    print("Failed to parse figsize")
+    args.figsize = (11, 8.5)
+
+  if args.output == None:
+    args.output = args.filename + '.png'
+
+  print(args)
+
+  main(args)
 
 
 
