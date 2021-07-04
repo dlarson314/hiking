@@ -211,7 +211,7 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
   label_to_index = {label: i for i, label in enumerate(labels)}
 
   num_labels = len(labels)
-  num_constraints = len(path_list) + 1
+  num_constraints = len(path_list)
 
   if num_labels > num_constraints:
     raise Exception("Too many labels for number of constraints")
@@ -220,15 +220,16 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
   constraint_vec_east = np.zeros(num_constraints)
   constraint_vec_north = np.zeros(num_constraints)
 
-  constraint_matrix[-1,label_to_index['start']] = 1
-  constraint_vec_east[-1] = 0   # it was already zero
-  constraint_vec_north[-1] = 0  # it was already zero
+  #constraint_matrix[-1,label_to_index['start']] = 1
+  #constraint_vec_east[-1] = 0   # it was already zero
+  #constraint_vec_north[-1] = 0  # it was already zero
 
   for row, path in enumerate(path_list):
     abs_error = path.get_absolute_error()
     if abs_error == 0:
       raise Exception("Error: path length not allowed to be zero")
-    weight = 1 / abs_error
+    #weight = 1 / abs_error
+    weight = 1
 
     easting, northing = path.get_total_offset()
     constraint_vec_east[row] = easting * weight
