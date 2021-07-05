@@ -63,6 +63,9 @@ class ShortPath:
     self.heading_dist = []
     self.fractional_error = 0.03
 
+  def __repr__(self):
+    return '%s->%s %s %f' % (self.start_label, self.finish_label, self.heading_dist, self.fractional_error)
+
   def set_start_label(self, label):
     self.start_label = label
 
@@ -206,7 +209,7 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
   labels = [p.start_label for p in path_list] + \
     [p.finish_label for p in path_list]
   labels = set(labels)
-  labels.difference(known_locations.keys())  # Don't include known locations
+  labels = labels.difference(known_locations.keys())  # Don't include known locations
   labels = sorted(list(labels))
   label_to_index = {label: i for i, label in enumerate(labels)}
 
@@ -228,8 +231,8 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
     abs_error = path.get_absolute_error()
     if abs_error == 0:
       raise Exception("Error: path length not allowed to be zero")
-    #weight = 1 / abs_error
-    weight = 1
+    weight = 1 / abs_error
+    #weight = 1
 
     easting, northing = path.get_total_offset()
     constraint_vec_east[row] = easting * weight
@@ -251,10 +254,16 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
       constraint_vec_east[row] -= known_east * weight
       constraint_vec_north[row] -= known_north * weight
 
+  #print(label_to_index)
+  #print(constraint_matrix)
+  #print(constraint_vec_east)
+
   loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_east, rcond=None)
-  print ('easting errors = ', s)
+  print ('# easting chi^2 = ', resid)
+  print ('# easting reduced chi^2 = ', resid / num_labels)
   loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_north, rcond=None)
-  print ('northing errors = ', s)
+  print ('# northing chi^2 = ', resid)
+  print ('# northing reduced chi^2 = ', resid / num_labels)
 
   locations = {label: (east, north) for label, east, north in zip(labels, loc_east, loc_north)}
   locations.update(known_locations)
@@ -268,6 +277,41 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
     corrected_paths.append(path)
 
   return corrected_paths, locations
+
+
+class TestSolve(unittest.TestCase):
+  def test1(self):
+    paths = []
+
+    s = ShortPath()
+    s.set_start_label('start')
+    s.set_finish_label('one')
+    s.add_step(0, 10)
+    paths.append(s)
+
+    s = ShortPath()
+    s.set_start_label('one')
+    s.set_finish_label('two')
+    s.add_step(90, 10)
+    paths.append(s)
+
+    s = ShortPath()
+    s.set_start_label('two')
+    s.set_finish_label('three')
+    s.add_step(180, 10)
+    paths.append(s)
+
+    s = ShortPath()
+    s.set_start_label('three')
+    s.set_finish_label('start')
+    s.add_step(270, 10)
+    paths.append(s)
+
+    print(paths)
+
+    known_locations={'start':(0,0)}
+    corrected_paths, locations = solve_paths(paths, known_locations=known_locations)
+    print(locations)
 
 
 def main(args):
@@ -284,6 +328,7 @@ def main(args):
   known_locations={'start':(0,0)}
   label = 'start'
   units = ''
+  fractional_error = 0.03
 
   solve_level=0
   solved_paths = []
@@ -295,6 +340,10 @@ def main(args):
   for line in lines:
     if re.search('^UNITS', line):
       units = line.split()[1]
+      continue
+
+    if re.search('^FRACTIONAL_ERROR', line):
+      fractional_error = float(line.split()[1])
       continue
 
     if re.search('^PACES_PER_100METERS', line):
@@ -349,6 +398,7 @@ def main(args):
         path_list.append(current_path)
       current_path = ShortPath()
       current_path.set_start_label(label)
+      current_path.set_fractional_error(fractional_error)
       continue
 
     try:
