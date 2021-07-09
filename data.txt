@@ -11,6 +11,8 @@
 # (2) distances in paces
 MAGNETIC_DECLINATION -11.0
 PACES_PER_100METERS 60
+UNITS meters  # Just for axis labels
+FRACTIONAL_ERROR 0.03
 @start latlon=40.750568,-73.993519
 200 26
 228 36
@@ -231,6 +233,6 @@ PACES_PER_100METERS 60
 026 34
 @start
 
-
+SOLVE
 
 
