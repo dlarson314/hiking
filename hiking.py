@@ -200,7 +200,7 @@ class TestShortPath(unittest.TestCase):
     self.assertAlmostEqual(s.get_absolute_error(), 4.0, places=None, delta=delta)
 
 
-def solve_paths(path_list, known_locations={'start':(0,0)}):
+def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
   """
   Take a list of ShortPaths, some with coincident endpoints, and preferably
   overcontrained, and find the least squares solution for all of the paths.
@@ -254,16 +254,22 @@ def solve_paths(path_list, known_locations={'start':(0,0)}):
       constraint_vec_east[row] -= known_east * weight
       constraint_vec_north[row] -= known_north * weight
 
-  #print(label_to_index)
-  #print(constraint_matrix)
-  #print(constraint_vec_east)
+  #if debug:
+  #  print(label_to_index)
+  #  print(constraint_matrix)
+  #  print(constraint_vec_east)
 
   loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_east, rcond=None)
-  print ('# easting chi^2 = ', resid)
-  print ('# easting reduced chi^2 = ', resid / num_labels)
+  print ('# easting reduced chi^2 = ', resid / num_constraints)
   loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_north, rcond=None)
-  print ('# northing chi^2 = ', resid)
-  print ('# northing reduced chi^2 = ', resid / num_labels)
+  print ('# northing reduced chi^2 = ', resid / num_constraints)
+
+  if debug:
+    chi2_east = np.dot(constraint_matrix, loc_east) - constraint_vec_east
+    chi2_north = np.dot(constraint_matrix, loc_north) - constraint_vec_north
+    for chi2e, chi2n, path in zip(chi2_east, chi2_north, path_list):
+      print({'start': path.start_label, 'finish': path.finish_label, 'chi2 east': chi2e, 'chi2 north': chi2n})
+
 
   locations = {label: (east, north) for label, east, north in zip(labels, loc_east, loc_north)}
   locations.update(known_locations)
@@ -369,7 +375,9 @@ def main(args):
       continue
 
     if re.search('^SOLVE', line):
-      corrected_paths, new_locations = solve_paths(path_list, known_locations=known_locations)
+      corrected_paths, new_locations = solve_paths(path_list,
+                                                   known_locations=known_locations,
+                                                   debug=args.debug)
       solved_paths += corrected_paths
       path_list = []
       known_locations = new_locations
@@ -434,6 +442,7 @@ if __name__ == "__main__":
   parser.add_argument('-o', '--output', help='Output filaname for figure')
   parser.add_argument('-s', '--figsize', help='width,height of figure in inches', default="11,8.5")
   parser.add_argument('--dpi', type=int, help='Dots per inch', default=100)
+  parser.add_argument('--debug', action='store_true', help='Debug', default=False)
 
   args = parser.parse_args()
 
