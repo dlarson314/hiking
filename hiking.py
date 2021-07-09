@@ -223,10 +223,6 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
   constraint_vec_east = np.zeros(num_constraints)
   constraint_vec_north = np.zeros(num_constraints)
 
-  #constraint_matrix[-1,label_to_index['start']] = 1
-  #constraint_vec_east[-1] = 0   # it was already zero
-  #constraint_vec_north[-1] = 0  # it was already zero
-
   for row, path in enumerate(path_list):
     abs_error = path.get_absolute_error()
     if abs_error == 0:
