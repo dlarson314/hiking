@@ -1,6 +1,5 @@
 import argparse
 import re
-import copy
 import unittest
 
 import numpy as np
@@ -57,14 +56,17 @@ class TestPolar(unittest.TestCase):
 
 class ShortPath:
     def __init__(self):
-        self.origin = (0,0)
+        self.origin = (0, 0)
         self.start_label = None
         self.finish_label = None
         self.heading_dist = []
         self.fractional_error = 0.03
 
     def __repr__(self):
-        return '%s->%s %s %f' % (self.start_label, self.finish_label, self.heading_dist, self.fractional_error)
+        return '%s->%s %s %f' % (self.start_label,
+                                 self.finish_label,
+                                 self.heading_dist,
+                                 self.fractional_error)
 
     def set_start_label(self, label):
         self.start_label = label
@@ -73,7 +75,7 @@ class ShortPath:
         self.finish_label = label
 
     def set_fractional_error(self, fractional_error):
-         self.fractional_error = fractional_error
+        self.fractional_error = fractional_error
 
     def add_step(self, degrees, distance, scale=1):
         self.heading_dist.append((degrees, distance*scale))
@@ -82,11 +84,15 @@ class ShortPath:
         return len(self.heading_dist)
 
     def rotate_clockwise(self, degrees_cw):
-        self.heading_dist = [(deg + degrees_cw, dist) for deg, dist in self.heading_dist]
+        self.heading_dist = [
+          (deg + degrees_cw, dist) for deg, dist in self.heading_dist
+        ]
 
     def get_xy_offsets(self):
-        delta_east = [dist * np.sin(deg * np.pi/180) for deg, dist in self.heading_dist]
-        delta_north = [dist * np.cos(deg * np.pi/180) for deg, dist in self.heading_dist]
+        delta_east = [dist * np.sin(deg * np.pi/180)
+                      for deg, dist in self.heading_dist]
+        delta_north = [dist * np.cos(deg * np.pi/180)
+                       for deg, dist in self.heading_dist]
         return delta_east, delta_north
 
     def get_xy_path(self):
@@ -105,7 +111,8 @@ class ShortPath:
         """
         Return path length traveled times fractional error
         """
-        return np.sum([dist for heading, dist in self.heading_dist]) * self.fractional_error
+        return np.sum([dist for heading, dist in self.heading_dist]) \
+            * self.fractional_error
 
     def correct_the_path(self, true_easting, true_northing):
         """
@@ -125,7 +132,8 @@ class ShortPath:
         correction_north = true_northing - raw_north
         correct_delta_east = delta_east + correction_east * fraction
         correct_delta_north = delta_north + correction_north * fraction
-        self.heading_dist = [xy_to_heading_dist(e, n) for e, n in zip(correct_delta_east, correct_delta_north)]
+        self.heading_dist = [xy_to_heading_dist(e, n) for e, n in
+                             zip(correct_delta_east, correct_delta_north)]
 
 
 class TestShortPath(unittest.TestCase):
@@ -189,15 +197,19 @@ class TestShortPath(unittest.TestCase):
         s = ShortPath()
         delta = 1e-7
         s.set_fractional_error(0.01)
-        self.assertAlmostEqual(s.get_absolute_error(), 0, places=None, delta=delta)
+        self.assertAlmostEqual(s.get_absolute_error(), 0, places=None,
+                               delta=delta)
         s.add_step(0, 10)
         s.add_step(90, 10)
-        self.assertAlmostEqual(s.get_absolute_error(), 0.2, places=None, delta=delta)
+        self.assertAlmostEqual(s.get_absolute_error(), 0.2, places=None,
+                               delta=delta)
         s.add_step(0, 10)
         s.add_step(90, 10)
-        self.assertAlmostEqual(s.get_absolute_error(), 0.4, places=None, delta=delta)
+        self.assertAlmostEqual(s.get_absolute_error(), 0.4, places=None,
+                               delta=delta)
         s.set_fractional_error(0.1)
-        self.assertAlmostEqual(s.get_absolute_error(), 4.0, places=None, delta=delta)
+        self.assertAlmostEqual(s.get_absolute_error(), 4.0, places=None,
+                               delta=delta)
 
 
 def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
@@ -209,7 +221,8 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
     labels = [p.start_label for p in path_list] + \
         [p.finish_label for p in path_list]
     labels = set(labels)
-    labels = labels.difference(known_locations.keys())  # Don't include known locations
+    # Don't include known locations
+    labels = labels.difference(known_locations.keys())
     labels = sorted(list(labels))
     label_to_index = {label: i for i, label in enumerate(labels)}
 
@@ -255,19 +268,28 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
     #  print(constraint_matrix)
     #  print(constraint_vec_east)
 
-    loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_east, rcond=None)
+    loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix,
+                                                constraint_vec_east,
+                                                rcond=None)
     print ('# easting reduced chi^2 = ', resid / num_constraints)
-    loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix, constraint_vec_north, rcond=None)
+    loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix,
+                                                constraint_vec_north,
+                                                rcond=None)
     print ('# northing reduced chi^2 = ', resid / num_constraints)
 
     if debug:
-        chi2_east = np.dot(constraint_matrix, loc_east) - constraint_vec_east
-        chi2_north = np.dot(constraint_matrix, loc_north) - constraint_vec_north
+        chi2_east = np.dot(constraint_matrix, loc_east) \
+            - constraint_vec_east
+        chi2_north = np.dot(constraint_matrix, loc_north) \
+            - constraint_vec_north
         for chi2e, chi2n, path in zip(chi2_east, chi2_north, path_list):
-            print({'start': path.start_label, 'finish': path.finish_label, 'chi2 east': chi2e, 'chi2 north': chi2n})
+            print({'start': path.start_label,
+                   'finish': path.finish_label,
+                   'chi2 east': chi2e,
+                   'chi2 north': chi2n})
 
-
-    locations = {label: (east, north) for label, east, north in zip(labels, loc_east, loc_north)}
+    locations = {label: (east, north) for label, east, north in
+        zip(labels, loc_east, loc_north)}
     locations.update(known_locations)
 
     corrected_paths = []
@@ -312,7 +334,8 @@ class TestSolve(unittest.TestCase):
         print(paths)
 
         known_locations={'start':(0,0)}
-        corrected_paths, locations = solve_paths(paths, known_locations=known_locations)
+        corrected_paths, locations = solve_paths(paths,
+            known_locations=known_locations)
         print(locations)
 
 
@@ -371,9 +394,9 @@ def main(args):
             continue
 
         if re.search('^SOLVE', line):
-            corrected_paths, new_locations = solve_paths(path_list,
-                                                        known_locations=known_locations,
-                                                        debug=args.debug)
+            corrected_paths, new_locations = \
+                solve_paths(path_list, known_locations=known_locations,
+                            debug=args.debug)
             solved_paths += corrected_paths
             path_list = []
             known_locations = new_locations
@@ -433,12 +456,23 @@ def main(args):
 if __name__ == "__main__":
     #unittest.main()
 
-    parser = argparse.ArgumentParser(description="Plot bearings and pace counts")
-    parser.add_argument('filename', help='Input filename')
-    parser.add_argument('-o', '--output', help='Output filaname for figure')
-    parser.add_argument('-s', '--figsize', help='width,height of figure in inches', default="11,8.5")
-    parser.add_argument('--dpi', type=int, help='Dots per inch', default=100)
-    parser.add_argument('--debug', action='store_true', help='Debug', default=False)
+    parser = argparse.ArgumentParser(
+        description="Plot bearings and pace counts")
+    parser.add_argument('filename',
+                        help='Input filename')
+    parser.add_argument('-o', '--output',
+                        help='Output filaname for figure')
+    parser.add_argument('-s', '--figsize',
+                        help='width,height of figure in inches',
+                        default="11,8.5")
+    parser.add_argument('--dpi',
+                        type=int,
+                        help='Dots per inch',
+                        default=100)
+    parser.add_argument('--debug',
+                        action='store_true',
+                        help='Debug',
+                        default=False)
 
     args = parser.parse_args()
 
