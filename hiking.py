@@ -212,7 +212,7 @@ class TestShortPath(unittest.TestCase):
                                delta=delta)
 
 
-def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
+def solve_paths(path_list, known_locations={'start': (0, 0)}, debug=False):
     """
     Take a list of ShortPaths, some with coincident endpoints, and preferably
     overcontrained, and find the least squares solution for all of the paths.
@@ -241,7 +241,7 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
         if abs_error == 0:
             raise Exception("Error: path length not allowed to be zero")
         weight = 1 / abs_error
-        #weight = 1
+        # weight = 1
 
         easting, northing = path.get_total_offset()
         constraint_vec_east[row] = easting * weight
@@ -263,19 +263,19 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
             constraint_vec_east[row] -= known_east * weight
             constraint_vec_north[row] -= known_north * weight
 
-    #if debug:
-    #  print(label_to_index)
-    #  print(constraint_matrix)
-    #  print(constraint_vec_east)
+    # if debug:
+    #     print(label_to_index)
+    #     print(constraint_matrix)
+    #     print(constraint_vec_east)
 
     loc_east,  resid, rank, s = np.linalg.lstsq(constraint_matrix,
                                                 constraint_vec_east,
                                                 rcond=None)
-    print ('# easting reduced chi^2 = ', resid / num_constraints)
+    print('# easting reduced chi^2 = ', resid / num_constraints)
     loc_north, resid, rank, s = np.linalg.lstsq(constraint_matrix,
                                                 constraint_vec_north,
                                                 rcond=None)
-    print ('# northing reduced chi^2 = ', resid / num_constraints)
+    print('# northing reduced chi^2 = ', resid / num_constraints)
 
     if debug:
         chi2_east = np.dot(constraint_matrix, loc_east) \
@@ -289,7 +289,7 @@ def solve_paths(path_list, known_locations={'start':(0,0)}, debug=False):
                    'chi2 north': chi2n})
 
     locations = {label: (east, north) for label, east, north in
-        zip(labels, loc_east, loc_north)}
+                 zip(labels, loc_east, loc_north)}
     locations.update(known_locations)
 
     corrected_paths = []
@@ -333,9 +333,9 @@ class TestSolve(unittest.TestCase):
 
         print(paths)
 
-        known_locations={'start':(0,0)}
-        corrected_paths, locations = solve_paths(paths,
-            known_locations=known_locations)
+        known_locations = {'start': (0, 0)}
+        corrected_paths, locations = \
+            solve_paths(paths, known_locations=known_locations)
         print(locations)
 
 
@@ -350,12 +350,12 @@ def main(args):
     # Default to angles in degrees
     use_degrees = True
 
-    known_locations={'start':(0,0)}
+    known_locations = {'start': (0, 0)}
     label = 'start'
     units = ''
     fractional_error = 0.03
 
-    solve_level=0
+    solve_level = 0
     solved_paths = []
     path_list = []
     current_path = ShortPath()
@@ -405,11 +405,11 @@ def main(args):
                 labels.add(path.start_label)
                 labels.add(path.finish_label)
                 eastings, northings = path.get_xy_path()
-                mpl.plot(eastings, northings, '-', color='C%d'%solve_level)
+                mpl.plot(eastings, northings, '-', color='C%d' % solve_level)
             labels = list(labels)
             x = [known_locations[label][0] for label in labels]
             y = [known_locations[label][1] for label in labels]
-            mpl.plot(x, y, '+k') #, color='C%d'%solve_level)
+            mpl.plot(x, y, '+k')
             solve_level += 1
             for label in labels:
                 easting, northing = known_locations[label]
@@ -441,9 +441,8 @@ def main(args):
                 # Convert paces to meters by multiplying by scale.
                 distance = float(pair[1])
                 current_path.add_step(heading_degrees, distance, scale=scale)
-        except:
+        except Exception:
             print('line failed: ', line)
-
 
     mpl.xlabel(units + ' east')
     mpl.ylabel(units + ' north')
@@ -454,7 +453,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    #unittest.main()
+    # unittest.main()
 
     parser = argparse.ArgumentParser(
         description="Plot bearings and pace counts")
@@ -481,16 +480,13 @@ if __name__ == "__main__":
         height = float(height)
         width = float(width)
         args.figsize = (height, width)
-    except:
+    except Exception:
         print("Failed to parse figsize")
         args.figsize = (11, 8.5)
 
-    if args.output == None:
+    if args.output is None:
         args.output = args.filename + '.png'
 
     print(args)
 
     main(args)
-
-
-
